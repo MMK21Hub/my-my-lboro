@@ -1,3 +1,4 @@
+from datetime import datetime
 from requests import Session
 
 
@@ -8,6 +9,9 @@ class MyLboro:
         base = "https://my.lboro.ac.uk/campusm/sso"
         LogIn = f"{base}/ldap/2548"
         Calendars = f"{base}/calendars/CAL"
+
+        # Calendar = lambda cal_type: f"{base}/cal2/{cal_type}"
+        Calendar = f"{base}/cal2/{{cal_type}}"
 
     def __init__(self):
         self.USER_AGENT = "my-my-lboro/0.1"
@@ -38,6 +42,15 @@ class MyLboro:
         res.raise_for_status()
         data = res.json()
         return data["calendars"]
+
+    def get_calendar_events(self, cal_type: str, start: datetime, end: datetime):
+        res = self.session.get(
+            url=self.Endpoints.Calendar.format(cal_type=cal_type),
+            params={"start": start.isoformat(), "end": end.isoformat()},
+        )
+        res.raise_for_status()
+        data = res.json()
+        return data["events"]
 
     def destroy(self):
         self.session.close()
