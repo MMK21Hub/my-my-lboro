@@ -8,6 +8,7 @@ load_dotenv()
 class Endpoints:
     base = "https://my.lboro.ac.uk/campusm/sso"
     LogIn = f"{base}/ldap/2548"
+    Calendars = f"{base}/calendars/CAL"
 
 
 USER_AGENT = "my-my-lboro/0.0"
@@ -29,7 +30,10 @@ with requests.Session() as session:
         timeout=10,
     )
     res.raise_for_status()
-    print(res.status_code)
-    print(res.text)
-    print(res.headers)
     account_info = res.json()
+    print(account_info)
+
+    res = session.get(Endpoints.Calendars)
+    res.raise_for_status()
+    data = res.json()
+    print(data)
