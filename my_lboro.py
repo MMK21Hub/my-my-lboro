@@ -1,6 +1,8 @@
 from datetime import datetime
 from requests import Session
 
+from my_lboro_types import CalendarEventsResponse
+
 
 class MyLboro:
     """An API client, of sorts, for the myLboro app API"""
@@ -49,8 +51,8 @@ class MyLboro:
             params={"start": start.isoformat(), "end": end.isoformat()},
         )
         res.raise_for_status()
-        data = res.json()
-        return data["events"]
+        data = res.text
+        return CalendarEventsResponse.model_validate_json(data).events
 
     def destroy(self):
         self.session.close()
