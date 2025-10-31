@@ -4,20 +4,32 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-url = "https://my.lboro.ac.uk/campusm/sso/ldap/2548"
-data = {"username": getenv("USERNAME"), "password": getenv("PASSWORD")}  # <- replace
-headers = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0",
-    "Accept": "*/*",
-    "Accept-Language": "en-US,en;q=0.5",
-    "X-Requested-With": "XMLHttpRequest",
-    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-}
+
+class Endpoints:
+    base = "https://my.lboro.ac.uk/campusm/sso"
+    LogIn = f"{base}/ldap/2548"
+
+
+USER_AGENT = "my-my-lboro/0.0"
 
 with requests.Session() as session:
-    # session preserves cookies (equivalent to credentials: include)
-    response = session.post(url, data=data, headers=headers, timeout=10)
-    response.raise_for_status()
-    print(response.status_code)
-    print(response.text)
-    print(response.headers)
+    session.headers.update(
+        {
+            "User-Agent": USER_AGENT,
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
+    )
+
+    # Log in
+    res = session.post(
+        Endpoints.LogIn,
+        data={"username": getenv("USERNAME"), "password": getenv("PASSWORD")},
+        headers={"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"},
+        timeout=10,
+    )
+    res.raise_for_status()
+    print(res.status_code)
+    print(res.text)
+    print(res.headers)
+    account_info = res.json()
