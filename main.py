@@ -9,7 +9,6 @@ from config import config
 
 client = MyLboro()
 user = client.log_in(config.lboro_username, config.lboro_password)
-calendars = client.get_calendars()
 cal_start = datetime.now() + timedelta(days=0)
 cal_end = datetime.now() + timedelta(days=7)
 course_timetable = client.get_calendar_events("course_timetable", cal_start, cal_end)
@@ -22,12 +21,27 @@ async def root():
     return {"message": "Hello World"}
 
 
+@app.get("/timetables")
+async def get_timetables():
+    """Provides a list of available timetables."""
+    return {"timetables": client.get_calendars()}
+
+
 @app.get("/lboro.ics")
-async def get_calendar_ics():
+async def get_calendar_ics(
+    timetable: str = "course_timetable", days_ahead: int = 90, days_behind: int = 7
+):
+    """Provides your timetable in iCal format.
+
+    Query parameters:
+    - `timetable`: The timetable to fetch (e.g. `course_timetable`, `sports_timetable`) (default: `course_timetable`)
+    - `days_ahead`: How many days events should be fetched for, starting from today (default: `90`)
+    - `days_behind`: How many extra days of events should be fetched from before today (default: `7`)
+    """
     events = client.get_calendar_events(
-        "course_timetable",
-        datetime.now() + timedelta(days=0),
-        datetime.now() + timedelta(days=7),
+        timetable,
+        datetime.now() + timedelta(days=-days_behind),
+        datetime.now() + timedelta(days=days_ahead),
     )
     ical = convert_events_to_ical(events)
     return StreamingResponse(content=ical, media_type="text/calendar")
