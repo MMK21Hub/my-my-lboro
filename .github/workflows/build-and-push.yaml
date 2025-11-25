@@ -21,7 +21,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-             ${{ vars.DOCKERHUB_USERNAME }}/my-my-lboro
+             ${{ env.DOCKERHUB_USERNAME }}/my-my-lboro
           tags: |
             type=sha
             type=semver,pattern={{version}}
