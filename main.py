@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 
 from convert_to_ical import convert_events_to_ical
 from my_lboro import MyLboro
@@ -25,7 +25,13 @@ Source code: [GitHub - MMK21Hub/my-my-lboro](https://github.com/MMK21Hub/my-my-l
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return HTMLResponse("""
+<p>Hello!</p>
+                        
+<p>You have reached the My myLboro timetable API.</p>
+                        
+<p>Perhaps you'd like to <a href="/docs">take a look at the documentation page</a> for more info.</p>
+""")
 
 
 @app.get("/timetables")
