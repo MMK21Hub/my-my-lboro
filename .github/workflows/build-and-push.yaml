@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+env:
+  DOCKERHUB_USERNAME: mmk21
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -22,7 +25,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          images: mmk21/my-my-lboro
+          images: ${{ vars.DOCKERHUB_USERNAME }}/my-my-lboro
           tags: |
             latest
             type=sha
