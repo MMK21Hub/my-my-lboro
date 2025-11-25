@@ -36,7 +36,12 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint to verify the service is working."""
+    """Health check endpoint to verify the service is running.
+
+    Note that a more accurate health check would be to GET `/timetables`, as
+    that actually verifies connection to the myLboro API. But this at least
+    shows that the service is alive.
+    """
     logged_in = client.alive and bool(user)
     ok = logged_in
     return JSONResponse(
