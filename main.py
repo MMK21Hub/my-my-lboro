@@ -13,7 +13,14 @@ cal_start = datetime.now() + timedelta(days=0)
 cal_end = datetime.now() + timedelta(days=7)
 course_timetable = client.get_calendar_events("course_timetable", cal_start, cal_end)
 
-app = FastAPI()
+app = FastAPI(
+    title="My myLboro (timetable API)",
+    description="""
+A service that provides your Loughborough University timetable in [iCalendar format](https://icalendar.org/), ready to be imported into Google Calendar, Thunderbird, or any other calendar app!
+
+Source code: [GitHub - MMK21Hub/my-my-lboro](https://github.com/MMK21Hub/my-my-lboro)
+""",
+)
 
 
 @app.get("/")
@@ -31,7 +38,7 @@ async def get_timetables():
 async def get_calendar_ics(
     timetable: str = "course_timetable", days_ahead: int = 90, days_behind: int = 7
 ):
-    """Provides your timetable in iCal format.
+    """Provides your timetable in iCalendar format.
 
     Query parameters:
     - `timetable`: The timetable to fetch (e.g. `course_timetable`, `sports_timetable`) (default: `course_timetable`)
