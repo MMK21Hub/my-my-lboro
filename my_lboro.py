@@ -41,6 +41,7 @@ class MyLboro:
 
     def __init__(self):
         self.USER_AGENT = "my-my-lboro/0.1"
+        self.alive = True
         self.session = Session()
         self.session.headers.update(
             {
@@ -84,3 +85,4 @@ class MyLboro:
 
     def destroy(self):
         self.session.close()
+        self.alive = False

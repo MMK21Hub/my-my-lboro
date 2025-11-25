@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 
 from convert_to_ical import convert_events_to_ical
 from my_lboro import MyLboro
@@ -32,6 +32,19 @@ async def root():
                         
 <p>Perhaps you'd like to <a href="/docs">take a look at the documentation page</a> for more info.</p>
 """)
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint to verify the service is working."""
+    logged_in = client.alive and bool(user)
+    ok = logged_in
+    return JSONResponse(
+        {
+            "ok": ok,
+            "logged_in": logged_in,
+        }
+    )
 
 
 @app.get("/timetables")
