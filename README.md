@@ -6,7 +6,7 @@ Access your Loughborough University timetable through an iCal link (compatible w
 
 ### Setup
 
-You can deploy this on your own server using Docker!
+You can deploy this on your own server using [Docker](https://docs.docker.com/engine)! (Docker image: [mmk21/my-my-lboro](https://hub.docker.com/r/mmk21/my-my-lboro))
 
 1. Pick a folder and download the [production/docker-compose.yaml](production/docker-compose.yaml) file and the [.env.example](production/.env.example) file to it
 2. Rename `.env.example` to `.env` and fill in your Loughborough University log-on details
