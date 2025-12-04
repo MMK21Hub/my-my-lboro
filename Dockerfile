@@ -11,4 +11,4 @@ COPY *.py .
 
 EXPOSE 9000
 ENV PATH="/app/.venv/bin:$PATH"
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["fastapi", "run"]
