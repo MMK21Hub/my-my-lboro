@@ -20,6 +20,14 @@ You can deploy this on your own server using Docker!
 - Anyone who can send HTTP requests to your server (potentially the whole internet) can now access your university timetables! Make sure you're okay with this!
 - Remember that that `.env` file contains your university login details in plain text. Make sure nobody else can access that file, and definitely don't upload it to GitHub ;)
 
+### Add it to your calendar apps!
+
+Add your course timetable to your favourite calendar apps and services by giving them your new `/lboro.ics` link. For example, in Google Calendar:
+
+![Google Calendar Settings > General > Add Calendar > From URL page with URL filled "https://example.com/lboro.ics?days_ahead=120&days_behind=30"](screenshots/google-cal.png)
+
+![Google calendar 5-day view showing a bunch of lectures with useful info](screenshots/google-cal-events.png)
+
 ## Development instructions
 
 You'll need Python and `uv`.
