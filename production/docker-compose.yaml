@@ -1,0 +1,6 @@
+services:
+  my-my-lboro:
+    image: mmk21/my-my-lboro:latest
+    env_file: .env
+    ports:
+      - "8000:8000"
