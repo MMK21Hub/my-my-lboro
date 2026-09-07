@@ -10,12 +10,9 @@ from my_lboro import MyLboro
 # The calendar that we're interested in (i.e. the one that contains the timetable)
 # We _could_ fetch available calendars from the API, but I don't think that would
 # meaningly improve reliability of this program.
-CALENDAR_ID = "Student Timetable"
+MAIN_CALENDAR_ID = "Student Timetable"
 
-client = MyLboro(contact_email=config.contact_email)
-cal_start = datetime.now() + timedelta(days=0)
-cal_end = datetime.now() + timedelta(days=7)
-course_timetable = client.get_calendar_events(CALENDAR_ID, cal_start, cal_end)
+client = MyLboro(auth_token=config.lboro_auth_token, contact_email=config.contact_email)
 
 app = FastAPI(
     title="My myLboro (timetable API)",
@@ -46,14 +43,24 @@ async def health_check():
     that actually verifies connection to the myLboro API. But this at least
     shows that the service is alive.
     """
+    start = datetime.now()
+    end = datetime.now() + timedelta(days=1)
+    functioning = False
+    try:
+        client.get_calendar_events(MAIN_CALENDAR_ID, start, end)
+        functioning = True
+    except Exception:  # noqa: BLE001
+        functioning = False
     alive = client.alive
-    # TODO improve
-    ok = alive
+    ok = alive and functioning
+    status_code = 200 if ok else 503
     return JSONResponse(
         {
             "ok": ok,
             "alive": alive,
-        }
+            "functioning": functioning,
+        },
+        status_code,
     )
 
 
@@ -65,12 +72,12 @@ async def get_timetables():
 
 @app.get("/lboro.ics")
 async def get_calendar_ics(
-    timetable: str = "course_timetable", days_ahead: int = 90, days_behind: int = 7
+    timetable: str = MAIN_CALENDAR_ID, days_ahead: int = 90, days_behind: int = 7
 ):
     """Provides your timetable in iCalendar format.
 
     Query parameters:
-    - `timetable`: The timetable to fetch (e.g. `course_timetable`, `sports_timetable`) (default: `course_timetable`)
+    - `timetable`: The timetable to fetch (default: `Student Timetable`)
     - `days_ahead`: How many days events should be fetched for, starting from today (default: `90`)
     - `days_behind`: How many extra days of events should be fetched from before today (default: `7`)
     """

@@ -37,7 +37,7 @@ class MyLboro:
         Calendars = f"{base}/calendars/CAL"
         Calendar = f"{base}/cal2/{{cal_type}}"
 
-    def __init__(self, contact_email: str | None = None):
+    def __init__(self, auth_token: str, contact_email: str | None = None):
         self.USER_AGENT = "my-my-lboro/0.1"
         self.CONTACT_EMAIL = contact_email
         self.alive = True
@@ -49,6 +49,7 @@ class MyLboro:
                 "Accept-Language": "en-US,en;q=0.5",
             }
         )
+        self.session.cookies.set("cmAuthToken", auth_token)
         if self.CONTACT_EMAIL:
             self.session.headers.update({"From": self.CONTACT_EMAIL})
 
