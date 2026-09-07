@@ -2,8 +2,11 @@
 name = "my-my-lboro"
 version = "0.2.0"
 description = "Access your Loughborough University timetable using iCal"
+authors = [{ name = "Mish", email = "mish@slevel.xyz" }]
 readme = "README.md"
 requires-python = ">=3.13"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
     "dotenv>=0.9.9",
     "fastapi[standard]>=0.122.0",

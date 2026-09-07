@@ -58,3 +58,7 @@ You'll need Python and `uv`.
 2. `cd ./development`
 3. `docker compose up --build`
 4. Head to <http://127.0.0.1:8000/lboro.ics>
+
+## Credits
+
+Handmade with <3 and Python by Mish. Available under the [MIT license](LICENSE).
