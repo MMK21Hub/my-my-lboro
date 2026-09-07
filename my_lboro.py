@@ -34,10 +34,7 @@ class MyLboro:
 
     class Endpoints:
         base = "https://my.lboro.ac.uk/campusm/sso"
-        LogIn = f"{base}/ldap/2548"
         Calendars = f"{base}/calendars/CAL"
-
-        # Calendar = lambda cal_type: f"{base}/cal2/{cal_type}"
         Calendar = f"{base}/cal2/{{cal_type}}"
 
     def __init__(self, contact_email: str | None = None):
