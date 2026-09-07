@@ -1,4 +1,5 @@
 from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,6 +8,7 @@ class Config(BaseSettings):
     environment: Literal["development", "production"] = "development"
     lboro_username: str
     lboro_password: str
+    contact_email: str | None = None
 
 
 config = Config()  # type: ignore (values are loaded from .env at runtime)

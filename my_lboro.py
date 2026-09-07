@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from requests import Response, Session
 
 from my_lboro_types import CalendarEventsResponse
@@ -39,8 +40,9 @@ class MyLboro:
         # Calendar = lambda cal_type: f"{base}/cal2/{cal_type}"
         Calendar = f"{base}/cal2/{{cal_type}}"
 
-    def __init__(self):
+    def __init__(self, contact_email: str | None = None):
         self.USER_AGENT = "my-my-lboro/0.1"
+        self.CONTACT_EMAIL = contact_email
         self.alive = True
         self.session = Session()
         self.session.headers.update(
@@ -50,6 +52,8 @@ class MyLboro:
                 "Accept-Language": "en-US,en;q=0.5",
             }
         )
+        if self.CONTACT_EMAIL:
+            self.session.headers.update({"From": self.CONTACT_EMAIL})
 
     def log_in(self, username: str, password: str):
         res = self.session.post(

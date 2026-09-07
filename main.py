@@ -12,7 +12,7 @@ from my_lboro import MyLboro
 # meaningly improve reliability of this program.
 CALENDAR_ID = "Student Timetable"
 
-client = MyLboro()
+client = MyLboro(contact_email=config.contact_email)
 user = client.log_in(config.lboro_username, config.lboro_password)
 cal_start = datetime.now() + timedelta(days=0)
 cal_end = datetime.now() + timedelta(days=7)
