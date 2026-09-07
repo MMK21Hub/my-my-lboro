@@ -55,23 +55,6 @@ class MyLboro:
         if self.CONTACT_EMAIL:
             self.session.headers.update({"From": self.CONTACT_EMAIL})
 
-    def log_in(self, username: str, password: str):
-        res = self.session.post(
-            self.Endpoints.LogIn,
-            data={"username": username, "password": password},
-            headers={
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-            },
-            timeout=10,
-        )
-        if res.status_code == 500:
-            error = get_error_data(res)
-            if error:
-                raise error
-        res.raise_for_status()
-        account_info = res.json()
-        return account_info
-
     def get_calendars(self):
         res = self.session.get(self.Endpoints.Calendars)
         res.raise_for_status()

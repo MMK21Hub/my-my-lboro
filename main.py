@@ -13,7 +13,6 @@ from my_lboro import MyLboro
 CALENDAR_ID = "Student Timetable"
 
 client = MyLboro(contact_email=config.contact_email)
-user = client.log_in(config.lboro_username, config.lboro_password)
 cal_start = datetime.now() + timedelta(days=0)
 cal_end = datetime.now() + timedelta(days=7)
 course_timetable = client.get_calendar_events(CALENDAR_ID, cal_start, cal_end)
@@ -47,12 +46,13 @@ async def health_check():
     that actually verifies connection to the myLboro API. But this at least
     shows that the service is alive.
     """
-    logged_in = client.alive and bool(user)
-    ok = logged_in
+    alive = client.alive
+    # TODO improve
+    ok = alive
     return JSONResponse(
         {
             "ok": ok,
-            "logged_in": logged_in,
+            "alive": alive,
         }
     )
 
