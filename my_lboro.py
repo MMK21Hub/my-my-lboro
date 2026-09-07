@@ -38,7 +38,7 @@ class MyLboro:
         Calendar = f"{base}/cal2/{{cal_type}}"
 
     def __init__(self, auth_token: str, contact_email: str | None = None):
-        self.USER_AGENT = "my-my-lboro/0.1"
+        self.USER_AGENT = "my-my-lboro/0.2"
         self.CONTACT_EMAIL = contact_email
         self.alive = True
         self.session = Session()
