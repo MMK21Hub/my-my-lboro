@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from requests import Response, Session
 
 from my_lboro_types import CalendarEventsResponse
@@ -33,14 +34,12 @@ class MyLboro:
 
     class Endpoints:
         base = "https://my.lboro.ac.uk/campusm/sso"
-        LogIn = f"{base}/ldap/2548"
         Calendars = f"{base}/calendars/CAL"
-
-        # Calendar = lambda cal_type: f"{base}/cal2/{cal_type}"
         Calendar = f"{base}/cal2/{{cal_type}}"
 
-    def __init__(self):
-        self.USER_AGENT = "my-my-lboro/0.1"
+    def __init__(self, auth_token: str, contact_email: str | None = None):
+        self.USER_AGENT = "my-my-lboro/0.2"
+        self.CONTACT_EMAIL = contact_email
         self.alive = True
         self.session = Session()
         self.session.headers.update(
@@ -50,23 +49,9 @@ class MyLboro:
                 "Accept-Language": "en-US,en;q=0.5",
             }
         )
-
-    def log_in(self, username: str, password: str):
-        res = self.session.post(
-            self.Endpoints.LogIn,
-            data={"username": username, "password": password},
-            headers={
-                "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-            },
-            timeout=10,
-        )
-        if res.status_code == 500:
-            error = get_error_data(res)
-            if error:
-                raise error
-        res.raise_for_status()
-        account_info = res.json()
-        return account_info
+        self.session.cookies.set("cmAuthToken", auth_token)
+        if self.CONTACT_EMAIL:
+            self.session.headers.update({"From": self.CONTACT_EMAIL})
 
     def get_calendars(self):
         res = self.session.get(self.Endpoints.Calendars)

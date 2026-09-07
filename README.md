@@ -1,15 +1,30 @@
 # My myLboro
 
-Access your Loughborough University timetable through an iCal link (compatible with Google Calendar, Apple Calendar, and basically any other calendar app!)
+Access your Loughborough University timetable through an iCal link! This lets you add your table to basically any calendar app/service, including:
+
+- Google Calendar
+- Microsoft Outlook
+- Nextcloud
+- Home Assistant
+- Android (system-wide) (using [ICSx⁵](https://icsx5.bitfire.at/))
+- Apple Calendar (probably; I haven't tested)
 
 ## Usage
+
+### Prerequisites
+
+You'll need a myLboro authentication token to get this to work. To get one:
+
+1. Go to <https://my.lboro.ac.uk/>
+2. Log in
+3. Once you're on the home page, use devtools to find the value of the `cmAuthToken` cookie.
 
 ### Setup
 
 You can deploy this on your own server using [Docker](https://docs.docker.com/engine)! (Docker image: [mmk21/my-my-lboro](https://hub.docker.com/r/mmk21/my-my-lboro))
 
 1. Pick a folder and download the [production/docker-compose.yaml](production/docker-compose.yaml) file and the [.env.example](production/.env.example) file to it
-2. Rename `.env.example` to `.env` and fill in your Loughborough University log-on details
+2. Rename `.env.example` to `.env` and fill in your authentication token and a contact email (optional)
 3. Start the service by running the command `docker compose up -d` in that folder
 4. Optional: View the log output by running `docker compose logs -f`
 5. 🎉 Your timetable link is `http://YOUR_SERVER_IP:8000/lboro.ics` ("Get Calendar ICS")
@@ -43,3 +58,7 @@ You'll need Python and `uv`.
 2. `cd ./development`
 3. `docker compose up --build`
 4. Head to <http://127.0.0.1:8000/lboro.ics>
+
+## Credits
+
+Handmade with <3 and Python by Mish. Available under the [MIT license](LICENSE).
