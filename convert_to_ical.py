@@ -1,19 +1,22 @@
-from typing import Iterable
-from my_lboro_types import Event as LboroEvent
+from collections.abc import Iterable
+
 from ics import Calendar, Event
+
+from my_lboro_types import Event as LboroEvent
 
 
 def convert_events_to_ical(events: list[LboroEvent]) -> Iterable[str]:
     calendar = Calendar()
     for lboro_event in events:
         description = [
-            f"Class: {lboro_event.desc2}",
+            f"Type: {lboro_event.desc3}",
             f"Lecturer: {lboro_event.teacher_name}",
         ]
 
         calendar.events.add(
             Event(
-                name=lboro_event.desc1,
+                # desc1 is module code, desc2 is module name
+                name=f"{lboro_event.desc1}: {lboro_event.desc2}",
                 begin=lboro_event.start,
                 end=lboro_event.end,
                 location=lboro_event.loc_add1,
