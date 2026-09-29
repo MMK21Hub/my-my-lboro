@@ -11,7 +11,7 @@ class Event(BaseModel):
     event_ref: str = Field(alias="eventRef")
     desc1: str
     desc2: str
-    desc3: str
+    desc3: str | None = Field(alias="desc3", default=None)
     alert_com: str = Field(alias="alertCom")  # ??
     cal_date: datetime = Field(alias="calDate")
     start: datetime
