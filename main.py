@@ -1,6 +1,9 @@
+from collections import deque
 from datetime import datetime, timedelta
+from math import ceil
+from time import monotonic
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 
 from config import config
@@ -24,6 +27,26 @@ Source code: [GitHub - MMK21Hub/my-my-lboro](https://github.com/MMK21Hub/my-my-l
 )
 
 
+request_times: deque[float] = deque()
+last_upstream_success: float | None = None
+RATE_LIMIT = 30
+RATE_WINDOW_SECONDS = 60
+
+
+async def enforce_rate_limit():
+    now = monotonic()
+    while request_times and now - request_times[0] >= RATE_WINDOW_SECONDS:
+        request_times.popleft()
+    if len(request_times) >= RATE_LIMIT:
+        retry_after = ceil(RATE_WINDOW_SECONDS - (now - request_times[0]))
+        raise HTTPException(
+            status_code=429,
+            detail="Too many requests. Please try again later.",
+            headers={"Retry-After": str(retry_after)},
+        )
+    request_times.append(now)
+
+
 @app.get("/")
 async def root():
     return HTMLResponse("""
@@ -37,20 +60,21 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint to verify the service is running.
-
-    Note that a more accurate health check would be to GET `/timetables`, as
-    that actually verifies connection to the myLboro API. But this at least
-    shows that the service is alive.
-    """
-    start = datetime.now()
-    end = datetime.now() + timedelta(days=1)
-    functioning = False
-    try:
-        client.get_calendar_events(MAIN_CALENDAR_ID, start, end)
-        functioning = True
-    except Exception:  # noqa: BLE001
-        functioning = False
+    global last_upstream_success
+    functioning = (
+        last_upstream_success is not None
+        and monotonic() - last_upstream_success < RATE_WINDOW_SECONDS
+    )
+    if not functioning:
+        await enforce_rate_limit()
+        start = datetime.now()
+        end = start + timedelta(days=1)
+        try:
+            client.get_calendar_events(MAIN_CALENDAR_ID, start, end)
+            last_upstream_success = monotonic()
+            functioning = True
+        except Exception:  # noqa: BLE001
+            functioning = False
     alive = client.alive
     ok = alive and functioning
     status_code = 200 if ok else 503
@@ -64,13 +88,16 @@ async def health_check():
     )
 
 
-@app.get("/timetables")
+@app.get("/timetables", dependencies=[Depends(enforce_rate_limit)])
 async def get_timetables():
     """Provides a list of available timetables."""
-    return {"timetables": client.get_calendars()}
+    global last_upstream_success
+    calendars = client.get_calendars()
+    last_upstream_success = monotonic()
+    return {"timetables": calendars}
 
 
-@app.get("/lboro.ics")
+@app.get("/lboro.ics", dependencies=[Depends(enforce_rate_limit)])
 async def get_calendar_ics(
     timetable: str = MAIN_CALENDAR_ID, days_ahead: int = 90, days_behind: int = 7
 ):
@@ -81,10 +108,12 @@ async def get_calendar_ics(
     - `days_ahead`: How many days events should be fetched for, starting from today (default: `90`)
     - `days_behind`: How many extra days of events should be fetched from before today (default: `7`)
     """
+    global last_upstream_success
     events = client.get_calendar_events(
         timetable,
         datetime.now() + timedelta(days=-days_behind),
         datetime.now() + timedelta(days=days_ahead),
     )
+    last_upstream_success = monotonic()
     ical = convert_events_to_ical(events)
     return StreamingResponse(content=ical, media_type="text/calendar")
